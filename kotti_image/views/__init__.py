@@ -101,7 +101,7 @@ class ImageView(object):
         image, format, size = scaleImage(self.context.data.file.read(),
                                          width=width,
                                          height=height,
-                                         direction="thumb")
+                                         direction="thumbnail")
         res = Response(
             headerlist=[
                 ('Content-Disposition', '{0};filename="{1}"'.format(
