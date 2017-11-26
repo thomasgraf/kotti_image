@@ -5,6 +5,7 @@ Created on 2015-12-16
 :author: Andreas Kaiser (disko@binary-punks.com)
 """
 
+import os
 import PIL
 import rfc6266
 from unidecode import unidecode
@@ -97,11 +98,22 @@ class ImageView(object):
         if not (width and height):
             return self.request.uploaded_file_response(
                 self.context.data, disposition)
+        
+        
+        cache_file = '/tmp/%s-%s' % (self.context.id, scale)
+        
+        try:
+            size = os.stat(cache_file).st_size
+            image = open(cache_file, 'r').read()
+            format = self.context.mimetype
 
-        image, format, size = scaleImage(self.context.data.file.read(),
+        except OSError:
+            image, format, size = scaleImage(self.context.data.file.read(),
                                          width=width,
                                          height=height,
                                          direction="thumbnail")
+            open(cache_file, 'wb').write(image)
+
         res = Response(
             headerlist=[
                 ('Content-Disposition', '{0};filename="{1}"'.format(
